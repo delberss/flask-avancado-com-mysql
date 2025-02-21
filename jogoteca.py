@@ -3,21 +3,6 @@ from Jogo import Jogo
 from Usuario import Usuario
 from flask_sqlalchemy import SQLAlchemy
 
-jogo1 = Jogo('Fifa', 'Esporte', 'PS5/XBOX')
-jogo2 = Jogo('Call of Duty', 'FPS ', 'PC')
-jogo3 = Jogo('Counter-Strike', 'FPS ', 'PC')
-
-lista_jogos = [jogo1, jogo2, jogo3]
-
-usuario1 = Usuario('Delber', 'delberss', '123')
-usuario2 = Usuario('Pantera', 'panterass', '123')
-usuario3 = Usuario('Messi', 'leomessi', 'barça')
-
-usuarios = {
-    usuario1.nickname: usuario1,
-    usuario2.nickname: usuario2,
-    usuario3.nickname: usuario3,
-}
 
 app = Flask(__name__) #__name__ referencia a propria pagina
 app.secret_key = 'dssoares'
@@ -33,9 +18,26 @@ app.config['SQLALCHEMY_DATABASE_URI'] = \
 
 db = SQLAlchemy(app) # instância do banco de dados do SQLAlchamy
 
+class Jogos(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    nome = db.Column(db.String(50), nullable=False)
+    categoria = db.Column(db.String(40), nullable=False)
+    console = db.Column(db.String(20), nullable=False)
+
+    def __repr__(self):
+        return '<Name %r>' %self.nome
+    
+class Usuarios(db.Model):
+    nickname = db.Column(db.String(8), primary_key=True)
+    nome = db.Column(db.String(20), nullable=False)
+    senha = db.Column(db.String(100), nullable=False)
+
+    def __repr__(self):
+        return '<Name %r>' %self.nome
 
 @app.route('/')
 def index():
+    lista_jogos = Jogos.query.order_by(Jogos.id)
     return render_template('lista.html', titulo='Jogos', lista_jogos=lista_jogos)
 
 @app.route('/novo')
@@ -50,8 +52,17 @@ def criar():
     nome = request.form['nome']
     categoria = request.form['categoria']
     console = request.form['console']
-    jogo = Jogo(nome,categoria,console)
-    lista_jogos.append(jogo)
+
+    jogo = Jogos.query.filter_by(nome=nome).first()
+    if jogo:
+        flash('Jogo já existente')
+        return redirect(url_for('index'))
+
+    novoJogo = Jogos(nome=nome, categoria=categoria, console=console)
+
+    db.session.add(novoJogo)
+    db.session.commit()
+
     return redirect(url_for('index')) # passa a função que instancia a pagina
 
 @app.route('/login')
@@ -70,14 +81,14 @@ def logout():
 @app.route('/autenticar', methods=['POST',])
 def autenticar():
     usuario_form = request.form['usuario']
-    senha_form = request.form['senha']
+    usuario = Usuarios.query.filter_by(nickname=usuario_form).first()
     proxima_pagina = request.form['proxima']
 
     if not proxima_pagina or proxima_pagina == "None":
         proxima_pagina = url_for('index')
 
-    if usuario_form in usuarios:
-        usuario = usuarios[usuario_form]
+    if usuario:
+        senha_form = request.form['senha']
         if senha_form == usuario.senha:
             session['usuario_logado'] = usuario.nickname
             flash(usuario.nickname.capitalize() + ' logado com sucesso!')
