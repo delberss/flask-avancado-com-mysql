@@ -59,6 +59,24 @@ def atualizar():
 
     return redirect(url_for('index'))
 
+
+@app.route('/deletar/<int:id>')
+def deletar(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] is None:
+        return redirect(url_for('login')) 
+    
+    jogo = Jogos.query.filter_by(id=id).first()  # Buscar o objeto real
+    if jogo:
+        db.session.delete(jogo)  # Deletar o objeto do banco
+        db.session.commit()
+        flash(f'{jogo.nome} deletado com sucesso', 'success')  # Flash com nome do jogo e categoria de sucesso
+    else:
+        flash('Jogo não encontrado!', 'danger')  # Caso o ID não exista
+
+    return redirect(url_for('index'))
+
+     
+
 @app.route('/login')
 def login():
     proxima = request.args.get('proxima') #pega o argumento se existir
