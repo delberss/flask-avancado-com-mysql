@@ -1,5 +1,9 @@
-1. Adicione o .gitignore
-2. python -m venv venv
-3. venv\Scripts\activate
-4. pip install flask==2.0.2
-5. pip install --upgrade Flask Werkzeug
+--- Anotações do curso inicial ---
+1. python -m venv venv
+2. venv\Scripts\activate
+3. pip install flask==2.0.2
+4. pip install --upgrade Flask Werkzeug
+--- Novo ---
+5. pip install mysql-connector-python==8.0.28
+6. pip install flask-sqlalchemy==2.5.1
+7. pip install --upgrade Flask-SQLAlchemy
