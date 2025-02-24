@@ -14,6 +14,14 @@ def novo():
         return redirect(url_for('login', proxima=url_for('novo'))) 
     return render_template('novo.html', titulo='Novo jogo')
 
+@app.route('/editar/<int:id>')
+def editar(id):
+    if 'usuario_logado' not in session or session['usuario_logado'] == None:
+        #usando o ?proxima=editar como parametro para proxima pagina
+        return redirect(url_for('login', proxima=url_for('editar'))) 
+    jogo = Jogos.query.filter_by(id=id).first()
+    return render_template('editar.html', titulo='Editando jogo', jogo=jogo)
+
 @app.route('/criar', methods=['POST',])
 def criar():
     nome = request.form['nome']
@@ -31,6 +39,25 @@ def criar():
     db.session.commit()
 
     return redirect(url_for('index')) # passa a função que instancia a pagina
+
+
+@app.route('/atualizar', methods=['POST',])
+def atualizar():
+    jogo = Jogos.query.filter_by(id=request.form['id']).first()
+
+    nome = request.form['nome']
+    jogo.nome = nome
+
+    categoria = request.form['categoria']
+    jogo.categoria = categoria
+
+    console = request.form['console']
+    jogo.console = console
+
+    db.session.add(jogo)
+    db.session.commit()
+
+    return redirect(url_for('index'))
 
 @app.route('/login')
 def login():
