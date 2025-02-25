@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, session, flash, url_for, send_from_directory
 from jogoteca import app, db
 from models import Jogos, Usuarios
-from helpers import recupera_imagem, deleta_arquivo, FormularioJogo
+from helpers import recupera_imagem, deleta_arquivo, FormularioJogo, FormularioUsuario
 import time
 
 @app.route('/')
@@ -107,8 +107,9 @@ def deletar(id):
 @app.route('/login')
 def login():
     proxima = request.args.get('proxima') #pega o argumento se existir
+    form = FormularioUsuario()
     #passa esse argumento para tela renderizada
-    return render_template('login.html', proxima=proxima) 
+    return render_template('login.html', proxima=proxima, form=form) 
 
 @app.route('/logout')
 def logout():
@@ -119,7 +120,9 @@ def logout():
 
 @app.route('/autenticar', methods=['POST',])
 def autenticar():
-    usuario_form = request.form['usuario']
+    form = FormularioUsuario(request.form)
+
+    usuario_form = form.nickname.data
     usuario = Usuarios.query.filter_by(nickname=usuario_form).first()
     proxima_pagina = request.form['proxima']
 
@@ -127,7 +130,7 @@ def autenticar():
         proxima_pagina = url_for('index')
 
     if usuario:
-        senha_form = request.form['senha']
+        senha_form = form.senha.data
         if senha_form == usuario.senha:
             session['usuario_logado'] = usuario.nickname
             flash(usuario.nickname.capitalize() + ' logado com sucesso!')
