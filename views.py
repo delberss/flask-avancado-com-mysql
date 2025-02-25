@@ -1,6 +1,8 @@
-from flask import render_template, request, redirect, session, flash, url_for
+from flask import render_template, request, redirect, session, flash, url_for, send_from_directory
 from jogoteca import app, db
 from models import Jogos, Usuarios
+from helpers import recupera_imagem, deleta_arquivo
+import time
 
 @app.route('/')
 def index():
@@ -20,7 +22,8 @@ def editar(id):
         #usando o ?proxima=editar como parametro para proxima pagina
         return redirect(url_for('login', proxima=url_for('editar'))) 
     jogo = Jogos.query.filter_by(id=id).first()
-    return render_template('editar.html', titulo='Editando jogo', jogo=jogo)
+    capa_jogo = recupera_imagem(id)
+    return render_template('editar.html', titulo='Editando jogo', jogo=jogo, capa_jogo=capa_jogo)
 
 @app.route('/criar', methods=['POST',])
 def criar():
@@ -33,10 +36,15 @@ def criar():
         flash('Jogo já existente')
         return redirect(url_for('index'))
 
-    novoJogo = Jogos(nome=nome, categoria=categoria, console=console)
+    novo_jogo = Jogos(nome=nome, categoria=categoria, console=console)
 
-    db.session.add(novoJogo)
+    db.session.add(novo_jogo)
     db.session.commit()
+
+    arquivo = request.files['arquivo']
+    upload_path = app.config['UPLOAD_PATH']
+    timestamp = time.time()
+    arquivo.save(f'{upload_path}/capa{novo_jogo.id}-{timestamp}.jpg')
 
     return redirect(url_for('index')) # passa a função que instancia a pagina
 
@@ -56,6 +64,12 @@ def atualizar():
 
     db.session.add(jogo)
     db.session.commit()
+
+    arquivo = request.files['arquivo']
+    upload_path = app.config['UPLOAD_PATH']
+    timestamp = time.time()
+    deleta_arquivo(jogo.id)
+    arquivo.save(f'{upload_path}/capa{jogo.id}-{timestamp}.jpg')
 
     return redirect(url_for('index'))
 
@@ -111,3 +125,10 @@ def autenticar():
     else:
         flash('Usuário não cadastrado.')
         return redirect(url_for('login'))
+    
+
+@app.route('/uploads/<nome_arquivo>')
+def imagem(nome_arquivo):
+    return send_from_directory('uploads', nome_arquivo)
+
+
