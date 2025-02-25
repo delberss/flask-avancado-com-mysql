@@ -20,7 +20,7 @@ def novo():
 def editar(id):
     if 'usuario_logado' not in session or session['usuario_logado'] == None:
         #usando o ?proxima=editar como parametro para proxima pagina
-        return redirect(url_for('login', proxima=url_for('editar'))) 
+        return redirect(url_for('login', proxima=url_for('editar', id=id)))
     jogo = Jogos.query.filter_by(id=id).first()
     capa_jogo = recupera_imagem(id)
     return render_template('editar.html', titulo='Editando jogo', jogo=jogo, capa_jogo=capa_jogo)
