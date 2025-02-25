@@ -7,3 +7,5 @@
 5. pip install mysql-connector-python==8.0.28
 6. pip install flask-sqlalchemy==2.5.1
 7. pip install --upgrade Flask-SQLAlchemy
+8. pip install flask-wtf==1.0.0
+9. pip install --upgrade flask-wtf

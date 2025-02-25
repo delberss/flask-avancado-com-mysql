@@ -1,38 +1,41 @@
 {% extends "template.html" %}
-{% block conteudo %} 
-    <form action="{{url_for('atualizar')}}" method="post" enctype="multipart/form-data">
+{% block conteudo %}
+<form action="{{url_for('atualizar')}}" method="post" enctype="multipart/form-data">
 
-        <figure class="img thumbnail col-md-4">
-            <img class="img-fluid" src="{{ url_for('imagem',nome_arquivo=capa_jogo) }}">
-            <figcaption>
-              <label class="fileContainer">
+    <figure class="img thumbnail col-md-4">
+        <img class="img-fluid" src="{{ url_for('imagem',nome_arquivo=capa_jogo) }}">
+        <figcaption>
+            <label class="fileContainer">
                 Mudar Capa
                 <input type="file" name="arquivo" accept=".jpg">
-              </label>
-            </figcaption>
-          </figure>
+            </label>
+        </figcaption>
+    </figure>
 
-        <input type="hidden" name="id" value="{{ jogo.id }}">
-        <fieldset>
-            <div class="from-group">
-                <label for="nome">Nome</label>
-                <input type="text" id="nome" name="nome" class="form-control" value="{{jogo.nome}}">
-            </div>
+    <input type="hidden" name="id" value="{{ id }}">
+    {{ form.csrf_token() }}
+    <fieldset>
+        <div class="from-group">
+            {{ form.nome.label(class="form-label") }}
+            {{ form.nome(class="form-control") }}
+        </div>
 
-            <div class="from-group">
-                <label for="categoria">Categoria</label>
-                <input type="text" id="categoria" name="categoria" class="form-control" value="{{jogo.categoria}}">
-            </div>
+        <div class="from-group">
+            {{ form.categoria.label(class="form-label") }}
+            {{ form.categoria(class="form-control") }}
+        </div>
 
-            <div class="from-group">
-                <label for="console">Console</label>
-                <input type="text" id="console" name="console" class="form-control" value="{{jogo.console}}">
-            </div>
+        <div class="from-group">
+            {{ form.console.label(class="form-label") }}
+            {{ form.console(class="form-control") }}
+        </div>
 
-            <button type="submit" class="btn btn-primary btn-salvar" onclick="">Salvar</button>
+        <div class="from-group"> 
+            {{ form.salvar(class="btn btn-primary")}}
+            <a class="btn btn-danger" href={{url_for('index')}}>Voltar</a>
+        </div>
+        
 
-            <a class="btn btn-danger"href={{url_for('index')}}>Voltar</a>
-
-        </fieldset>
-    </form>
+    </fieldset>
+</form>
 {% endblock %}
