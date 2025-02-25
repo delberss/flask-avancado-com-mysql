@@ -1,8 +1,8 @@
 {% extends "template.html" %}
 {% block conteudo %}
-<form action="{{url_for('atualizar')}}" method="post" enctype="multipart/form-data">
+<form class="formularioJogo" action="{{url_for('atualizar')}}" method="post" enctype="multipart/form-data">
 
-    <figure class="img thumbnail col-md-4">
+    <figure class="img thumbnail col-md-4 formularioImagem">
         <img class="img-fluid" src="{{ url_for('imagem',nome_arquivo=capa_jogo) }}">
         <figcaption>
             <label class="fileContainer">
@@ -20,17 +20,17 @@
             {{ form.nome(class="form-control") }}
         </div>
 
-        <div class="from-group">
+        <div class="from-group inputBox">
             {{ form.categoria.label(class="form-label") }}
             {{ form.categoria(class="form-control") }}
         </div>
 
-        <div class="from-group">
+        <div class="from-group inputBox">
             {{ form.console.label(class="form-label") }}
             {{ form.console(class="form-control") }}
         </div>
 
-        <div class="from-group"> 
+        <div class="from-group buttons"> 
             {{ form.salvar(class="btn btn-primary")}}
             <a class="btn btn-danger" href={{url_for('index')}}>Voltar</a>
         </div>
